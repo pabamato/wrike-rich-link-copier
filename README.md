@@ -46,6 +46,12 @@ Non-Wrike URLs and non-URL text pass through untouched.
 To update after pulling new changes, return to `chrome://extensions` and click the reload
 icon on the extension's card.
 
+### Not on Chrome? Use the bookmarklet
+
+For Firefox, Safari, or anyone who'd rather not load an unpacked extension, there's a
+one-click bookmarklet that copies the current Wrike task as a rich link. See
+[bookmarklet.md](bookmarklet.md).
+
 ## Usage
 
 Just copy a Wrike link the way you normally would while on a Wrike tab:
@@ -75,6 +81,7 @@ wrike-rich-copier/
 ├── manifest.json   # MV3 manifest — declares the content script and match pattern
 ├── content.js      # All logic: clipboard interception + rich-link rewriting
 ├── README.md       # This file
+├── bookmarklet.md  # Cross-browser bookmarklet alternative (source + install)
 ├── AGENTS.md       # Guide for AI agents maintaining this repo
 ├── CLAUDE.md       # Pointer to AGENTS.md for Claude Code
 ├── CHANGELOG.md    # Version history
