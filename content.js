@@ -7,9 +7,37 @@
   const originalWriteText = navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText.bind(navigator.clipboard) : null;
   const originalWrite = navigator.clipboard && navigator.clipboard.write ? navigator.clipboard.write.bind(navigator.clipboard) : null;
 
-  // Clean the task/project title
+  // Track the work-item header whose permalink button was last clicked, so
+  // that when a task is opened in a modal or side panel (document.title still
+  // points at the list/folder) we read the title of the item the user acted
+  // on rather than the page title.
+  let lastPermalinkHeader = null;
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest && e.target.closest('[data-application="permalink-button"], .permalink-button');
+    if (btn) {
+      lastPermalinkHeader = btn.closest('.work-item-header__content, .work-item-header') || null;
+    }
+  }, true);
+
+  // Read the task/project title straight from the work-item header. Prefer the
+  // header tied to the last-clicked permalink button; otherwise fall back to a
+  // single header on the page.
+  function getTitleFromHeader() {
+    const selector = '.work-item-header__title textarea, [data-application="work-item-title"] textarea, textarea[aria-label="Work item title"]';
+    let el = null;
+    if (lastPermalinkHeader && document.contains(lastPermalinkHeader)) {
+      el = lastPermalinkHeader.querySelector(selector);
+    }
+    if (!el) el = document.querySelector(selector);
+    if (!el) return null;
+    const value = (el.value != null ? el.value : el.textContent) || '';
+    return value.trim() || null;
+  }
+
+  // Clean the task/project title. Read the header first (reliable inside
+  // modals and side panels), then fall back to the page title.
   function getCleanWrikeTitle() {
-    return document.title.replace(/\s*-\s*Wrike$/i, '').trim();
+    return getTitleFromHeader() || document.title.replace(/\s*-\s*Wrike$/i, '').trim();
   }
 
   // Escape a string so it is safe inside HTML text/attribute content.

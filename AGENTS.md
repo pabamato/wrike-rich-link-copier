@@ -32,7 +32,13 @@ double-injection. Key pieces, in order:
    `navigator.clipboard` methods *before* patching, so rewriting the clipboard can call the
    real API without triggering infinite recursion. **Always write via these stashed
    references, never the patched ones.**
-2. **`getCleanWrikeTitle()`** — reads `document.title` and strips the trailing ` - Wrike`.
+2. **`getCleanWrikeTitle()`** — reads the title from the work-item header
+   (`getTitleFromHeader()`) and only falls back to `document.title` (stripped of the trailing
+   ` - Wrike`) when no header is present. The header is authoritative because opening a task
+   from a list view in a modal or side panel leaves `document.title` pointing at the list, not
+   the task. `getTitleFromHeader()` prefers the header tied to the last-clicked
+   `permalink-button` (tracked via a capture-phase `click` listener) so that with multiple
+   panels open the copied link matches the item the user acted on.
 3. **`escapeHtml()` / `buildAnchorHtml()`** — escape all interpolated values before building
    the anchor. **Any code path that emits `text/html` MUST go through `buildAnchorHtml()`.**
    Wrike titles contain `&`, `<`, `>`, and quotes; unescaped interpolation produces corrupt
